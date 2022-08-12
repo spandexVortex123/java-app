@@ -7,12 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     @Query(value = "SELECT * FROM student where first_name = :firstName", nativeQuery = true)
-    Student findStudentByFirstName(String firstName);
+    List<Student> findStudentByFirstName(String firstName);
 
     @Query(value = "SELECT student FROM Student student WHERE student.username = :username")
     Student findStudentByUsername(String username);

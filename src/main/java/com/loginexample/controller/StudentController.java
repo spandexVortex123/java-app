@@ -1,13 +1,13 @@
 package com.loginexample.controller;
 
+import com.loginexample.dto.Response;
 import com.loginexample.model.Student;
 import com.loginexample.repository.StudentRepository;
-import org.jetbrains.annotations.NotNull;
+import com.loginexample.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -15,57 +15,44 @@ import java.util.List;
 public class StudentController {
 
     @Autowired
-    private StudentRepository studentRepository;
+    private StudentService studentService;
 
     @GetMapping(path = "/all")
     public List<Student> getAllStudents() {
-        return studentRepository.findAll();
+        return studentService.findAll();
     }
 
     @PostMapping(path = "/add")
-    public ResponseEntity<Student> addStudent(@RequestBody Student student) {
-        System.out.println(student);
-        studentRepository.save(student);
-        return new ResponseEntity<Student>(student, HttpStatus.OK);
+    public ResponseEntity<Response<Student>> addStudent(@RequestBody Student student) {
+        studentService.addStudent(student);
+        Response<Student> studentResponse = Response.<Student>builder()
+                .data(student)
+                .message("Student Added successfully")
+                .build();
+
+        return new ResponseEntity<>(studentResponse, HttpStatus.OK);
     }
 
     @GetMapping(path = "/search/{firstName}")
-    public ResponseEntity<Student> findStudentByFirstName(@PathVariable String firstName) {
-        Student student = studentRepository.findStudentByFirstName(firstName);
-        return new ResponseEntity<Student>(student, HttpStatus.OK);
+    public ResponseEntity<Response<List<Student>>> findStudentByFirstName(@PathVariable String firstName) {
+        List<Student> studentList = studentService.findByFirstName(firstName);
+
+        Response<List<Student>> studentResponse = Response.<List<Student>>builder()
+                .data(studentList)
+                .build();
+
+        return new ResponseEntity<>(studentResponse, HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/delete")
-    public ResponseEntity<Student> deleteStudentByUsername(@RequestParam String username) {
-        Student student = studentRepository.findStudentByUsername(username);
-        if(student == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        } else {
-            studentRepository.delete(student);
-            return new ResponseEntity<>(student, HttpStatus.OK);
-        }
-    }
+    public ResponseEntity<Response<Student>> deleteStudentByUsername(@RequestParam String username) {
+        Student student = studentService.deleteByUsername(username);
+        // some comment to test spring boot dev tools
+        Response<Student> studentResponse = Response.<Student>builder()
+                .data(student)
+                .message("Student with username " + username + " deleted.")
+                .build();
 
-    @PutMapping(path = "/update")
-    public ResponseEntity<Student> updateStudentByUsername(@NotNull @RequestBody Student student) {
-        String username = student.getUsername();
-        Student oldStudent = studentRepository.findStudentByUsername(username);
-        if(oldStudent == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        } else {
-            // BeanUtils.copyProperties(student, oldStudent, "id", "username");
-
-            String firstName = student.getFirstName();
-            String lastName = student.getLastName();
-            String password = student.getPassword();
-
-            Integer result = studentRepository.updateStudentByUsername(username, firstName, lastName, password);
-
-            if(result == 1) {
-                return new ResponseEntity<Student>(student, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-            }
-        }
+        return new ResponseEntity<>(studentResponse, HttpStatus.OK);
     }
 }
