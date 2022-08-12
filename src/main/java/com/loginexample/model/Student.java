@@ -3,8 +3,10 @@ package com.loginexample.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -23,5 +25,9 @@ public class Student {
     private String username;
     @Column(name = "password")
     private String password;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Note> noteList;
+
 
 }
