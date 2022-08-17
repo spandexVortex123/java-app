@@ -56,7 +56,7 @@ public class NoteService {
 
         List<Note> activeNoteList = new LinkedList<>();
         noteList.forEach(note -> {
-            if(note.getIsCompleted()) {
+            if(!note.getIsCompleted()) {
                 activeNoteList.add(note);
             }
         });

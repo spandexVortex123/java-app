@@ -2,7 +2,6 @@ package com.loginexample.controller;
 
 import com.loginexample.dto.Response;
 import com.loginexample.model.Student;
-import com.loginexample.repository.StudentRepository;
 import com.loginexample.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -54,5 +53,14 @@ public class StudentController {
                 .build();
 
         return new ResponseEntity<>(studentResponse, HttpStatus.OK);
+    }
+
+    @PutMapping("/updateStudent")
+    public ResponseEntity<Response<Student>> updateStudent(@RequestParam String username, @RequestBody Student student) {
+        Student student1 = studentService.updateStudent(username, student);
+        Response<Student> response = new Response<>();
+        response.setMessage("Data Updated Successfully");
+        response.setData(student1);
+        return ResponseEntity.ok(response);
     }
 }

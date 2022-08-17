@@ -20,7 +20,7 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     @Transactional
     Integer updateStudentNoteList(Long studentId, Long noteListId);
 
-    @Query(value = "UPDATE note SET is_completed = 1 WHERE id = :id", nativeQuery = true)
+    @Query(value = "UPDATE note SET is_completed = 1 WHERE id = :id",nativeQuery = true)
     @Modifying
     @Transactional
     Integer updateNoteAsCompleted(Long id);
